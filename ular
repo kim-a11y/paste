@@ -1,0 +1,73 @@
+import pygame
+import random
+
+pygame.init()
+
+# Variabel layar
+screen_width = 800
+screen_height = 600
+cell_size = 20
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Snake Game")
+
+# Warna yang digunakan
+black = (0, 0, 0)
+white = (255, 255, 255)
+green = (0, 255, 0)
+
+# Fungsi tampilan teks
+def print_text(message, color, x, y, font_size):
+    font = pygame.font.SysFont(None, font_size)
+    text = font.render(message, True, color)
+    screen.blit(text, (x, y))
+
+# Fungsi utama game
+def game():
+    snake = [[screen_width // 2, screen_height // 2]]
+    snake_dir = [0, 0]
+    food_pos = [random.randint(0, screen_width // cell_size - 1) * cell_size,
+                random.randint(0, screen_height // cell_size - 1) * cell_size]
+    
+    clock = pygame.time.Clock()
+    running = True
+
+    while running:
+        screen.fill(black)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            snake_dir = [0, -cell_size]
+        if keys[pygame.K_DOWN]:
+            snake_dir = [0, cell_size]
+        if keys[pygame.K_LEFT]:
+            snake_dir = [-cell_size, 0]
+        if keys[pygame.K_RIGHT]:
+            snake_dir = [cell_size, 0]
+
+        snake[0][0] += snake_dir[0]
+        snake[0][1] += snake_dir[1]
+
+        if snake[0] == food_pos:
+            snake.append([0, 0])
+            food_pos = [random.randint(0, screen_width // cell_size - 1) * cell_size,
+                        random.randint(0, screen_height // cell_size - 1) * cell_size]
+
+        for i, segment in enumerate(snake):
+            pygame.draw.rect(screen, green, pygame.Rect(segment[0], segment[1], cell_size, cell_size))
+
+        pygame.draw.rect(screen, white, pygame.Rect(food_pos[0], food_pos[1], cell_size, cell_size))
+
+        if snake[0][0] < 0 or snake[0][0] >= screen_width or snake[0][1] < 0 or snake[0][1] >= screen_height:
+            running = False
+
+        pygame.display.flip()
+        clock.tick(10)
+
+    pygame.quit()
+
+# Memulai game
+game()
